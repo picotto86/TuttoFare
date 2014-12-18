@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/editText"
+        android:text="IP"
+        android:editable="false"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:textIsSelectable="false" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/text_ip"
+        android:minWidth="20dp"
+        android:maxWidth="20dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignLeft="@+id/text_port"
+        android:layout_alignStart="@+id/text_port"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/editText2"
+        android:text="Port"
+        android:editable="false"
+        android:layout_below="@+id/editText"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/text_port"
+        android:layout_alignBaseline="@+id/editText2"
+        android:layout_alignBottom="@+id/editText2"
+        android:layout_toRightOf="@+id/editText3"
+        android:layout_marginLeft="119dp"
+        android:layout_marginStart="119dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/editText3"
+        android:text="Command"
+        android:editable="false"
+        android:layout_below="@+id/editText2"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/text_command"
+        android:layout_alignTop="@+id/editText3"
+        android:layout_alignLeft="@+id/text_port"
+        android:layout_alignStart="@+id/text_port"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/editText4"
+        android:text="Nome"
+        android:editable="false"
+        android:layout_below="@+id/editText3"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/text_title"
+        android:layout_above="@+id/buttonCancel"
+        android:layout_alignLeft="@+id/text_command"
+        android:layout_alignStart="@+id/text_command"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="OK"
+        android:id="@+id/buttonOk"
+        android:layout_below="@+id/editText4"
+        android:layout_toRightOf="@+id/editText3"
+        android:layout_toEndOf="@+id/editText3" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cancel"
+        android:id="@+id/buttonCancel"
+        android:layout_alignBottom="@+id/buttonOk"
+        android:layout_toRightOf="@+id/buttonOk"
+        android:layout_toEndOf="@+id/buttonOk" />
+
+</RelativeLayout>

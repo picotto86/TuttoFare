@@ -1,27 +1,48 @@
 package com.picotto86.tuttofare;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ListActivity;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import com.melnykov.fab.FloatingActionButton;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 
 public class MainActivity extends Activity {
+
+    static List<ContactInfo> result;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_my);
+
+        final Context mContext=this;
 
         setContentView(R.layout.activity_main);
         RecyclerView recList = (RecyclerView) findViewById(R.id.cardList);
@@ -34,10 +55,87 @@ public class MainActivity extends Activity {
 
         fab.attachToRecyclerView(recList);
 
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                final Dialog dialog = new Dialog(mContext);
+
+                dialog.setContentView(R.layout.dialog);
+
+                Button buttonCancel = (Button) dialog.findViewById(R.id.buttonCancel);
+
+                buttonCancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+
+                Button buttonOk = (Button) dialog.findViewById(R.id.buttonOk);
+
+                buttonOk.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String ip = String.valueOf(((EditText) dialog.findViewById(R.id.text_ip)).getText());
+                        String port = String.valueOf(((EditText) dialog.findViewById(R.id.text_port)).getText());
+                        String command = String.valueOf(((EditText) dialog.findViewById(R.id.text_command)).getText());
+                        String nome = String.valueOf(((EditText) dialog.findViewById(R.id.text_title)).getText());
+
+                        ContactInfo ci = new ContactInfo();
+                        ci.ip = ip;
+                        ci.port = port;
+                        ci.command = command;
+                        ci.title = nome;
+
+                        MainActivity.result.add(ci);
+
+                        dialog.dismiss();
+
+                        try {
+                            FileOutputStream outputStream = openFileOutput("data", Context.MODE_PRIVATE);
+                            for (int i = 0; i < MainActivity.result.size(); i++) {
+
+                                ContactInfo element = MainActivity.result.get(i);
+                                String res = element.ip + ":" + element.port + ":" + element.command + ":" + element.title + "\n";
+                                outputStream.write(res.getBytes());
+                            }
+                            outputStream.close();
+                        } catch (java.io.IOException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                });
+
+                dialog.show();
+
+
+            }
+        });
+
 
 
         ContactAdapter ca = new ContactAdapter(createList(30));
         recList.setAdapter(ca);
+
+
+
+        recList.addOnItemTouchListener(
+                new RecyclerItemClickListener(this, new RecyclerItemClickListener.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(View view, int position) {
+                        //Log.d("D:", "toccato" + result.get(position).title);
+
+                        ContactInfo con=result.get(position);
+
+                        Log.d("D:",con.ip+con.port);
+
+                    }
+
+                })
+        );
+
     }
 
 
@@ -65,8 +163,43 @@ public class MainActivity extends Activity {
 
     private List<ContactInfo> createList(int size) {
 
-        List<ContactInfo> result = new ArrayList<ContactInfo>();
-        for (int i=1; i <= size; i++) {
+        result = new ArrayList<ContactInfo>();
+
+        try {
+            InputStream is=openFileInput("data");
+
+            InputStreamReader reader=new InputStreamReader(is);
+            BufferedReader buff=new BufferedReader(reader);
+
+            String received="";
+            StringBuilder builder=new StringBuilder();
+            try {
+                while((received=buff.readLine())!=null){
+
+                    builder.append(received);
+
+                    StringTokenizer st=new StringTokenizer(received.toString(),":");
+
+                    ContactInfo contact=new ContactInfo();
+
+                    contact.ip=st.nextToken();
+                    contact.port=st.nextToken();
+                    contact.command=st.nextToken();
+                    contact.title=st.nextToken();
+
+                    MainActivity.result.add(contact);
+
+                    received="";
+
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        /*for (int i=1; i <= size; i++) {
             ContactInfo ci = new ContactInfo();
             ci.name = ContactInfo.NAME_PREFIX + i;
             ci.surname = ContactInfo.SURNAME_PREFIX + i;
@@ -75,7 +208,7 @@ public class MainActivity extends Activity {
             result.add(ci);
 
         }
-
+        */
         return result;
     }
 }

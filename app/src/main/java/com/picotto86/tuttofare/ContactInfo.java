@@ -4,9 +4,10 @@ package com.picotto86.tuttofare;
  * Created by picotto86 on 16/12/14.
  */
 public class ContactInfo {
-    protected String name;
-    protected String surname;
-    protected String email;
+    protected String ip;
+    protected String command;
+    protected String port;
+    protected String title;
 
 
     protected static final String NAME_PREFIX = "Name_";
