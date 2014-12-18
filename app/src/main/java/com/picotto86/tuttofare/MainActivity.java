@@ -5,7 +5,10 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
 import android.content.Context;
+import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,17 +20,23 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.melnykov.fab.FloatingActionButton;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -129,7 +138,17 @@ public class MainActivity extends Activity {
 
                         ContactInfo con=result.get(position);
 
-                        Log.d("D:",con.ip+con.port);
+                        Log.d("D:","Elemento "+position);
+
+                        Intent nuovaPagina;
+                        //nuovaPagina = new Intent(getBaseContext(), Dettaglio.class);
+                        //nuovaPagina.putExtra("ip", con.ip);
+                        //nuovaPagina.putExtra("porta", con.port);
+                        //nuovaPagina.putExtra("comando", con.command);
+
+                        AsyncHttpTask task=new AsyncHttpTask(con);
+
+                        task.execute();
 
                     }
 
@@ -210,5 +229,89 @@ public class MainActivity extends Activity {
         }
         */
         return result;
+    }
+
+    private class AsyncHttpTask extends AsyncTask<ContactInfo, Void, Integer> {
+
+        ContactInfo contatto;
+
+        String ris;
+
+        AsyncHttpTask(ContactInfo con){
+
+            contatto=con;
+
+
+
+        }
+
+
+        @Override
+        protected void onPreExecute() {
+
+            Toast.makeText(getApplicationContext(), "Connessione....", Toast.LENGTH_LONG).show();
+
+        }
+
+        @Override
+        protected Integer doInBackground(ContactInfo... params) {
+
+            DataInputStream dataInputStream = null;
+            DataOutputStream dataOutputStream = null;
+
+            JSONObject jsonData = new JSONObject();
+            try {
+                jsonData.put("request", contatto.command);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                Socket socket = new Socket(contatto.ip, Integer.parseInt(contatto.port));
+
+                Handler handler =  new Handler(getApplicationContext().getMainLooper());
+                handler.post( new Runnable(){
+                    public void run(){
+                        Toast.makeText(getApplicationContext(), "Creata connessione",Toast.LENGTH_LONG).show();
+                    }
+                });
+
+                dataOutputStream = new DataOutputStream(socket.getOutputStream());
+                dataInputStream = new DataInputStream(socket.getInputStream());
+
+                dataOutputStream.writeUTF(jsonData.toString());
+
+                handler.post( new Runnable(){
+                    public void run(){
+                        Toast.makeText(getApplicationContext(), "Dati inviati \nIn attesa di risposta....",Toast.LENGTH_LONG).show();
+                    }
+                });
+
+                Log.d("D:","ci sono");
+
+                final String response = dataInputStream.readUTF();
+
+                handler.post( new Runnable(){
+                    public void run(){
+                        Toast.makeText(getApplicationContext(), "Risposta: "+response.toString(),Toast.LENGTH_LONG).show();
+                    }
+                });
+
+
+
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Integer result) {
+
+        }
     }
 }
