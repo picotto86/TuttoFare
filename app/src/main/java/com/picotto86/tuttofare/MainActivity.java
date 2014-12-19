@@ -1,25 +1,20 @@
 package com.picotto86.tuttofare;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.melnykov.fab.FloatingActionButton;
@@ -30,7 +25,6 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -259,13 +253,6 @@ public class MainActivity extends Activity {
             DataInputStream dataInputStream = null;
             DataOutputStream dataOutputStream = null;
 
-            JSONObject jsonData = new JSONObject();
-            try {
-                jsonData.put("request", contatto.command);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
             try {
                 Socket socket = new Socket(contatto.ip, Integer.parseInt(contatto.port));
 
@@ -276,10 +263,18 @@ public class MainActivity extends Activity {
                     }
                 });
 
-                dataOutputStream = new DataOutputStream(socket.getOutputStream());
                 dataInputStream = new DataInputStream(socket.getInputStream());
 
-                dataOutputStream.writeUTF(jsonData.toString());
+                String res=dataInputStream.readUTF();
+
+                Log.d("D:","Ricevuto "+res);
+
+
+                DataOutputStream DOS = new DataOutputStream(socket.getOutputStream());
+
+
+                DOS.writeUTF(params[0].command);
+
 
                 handler.post( new Runnable(){
                     public void run(){
