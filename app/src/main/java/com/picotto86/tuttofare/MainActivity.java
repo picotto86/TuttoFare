@@ -265,15 +265,28 @@ public class MainActivity extends Activity {
 
                 dataInputStream = new DataInputStream(socket.getInputStream());
 
+                DataOutputStream DOS = new DataOutputStream(socket.getOutputStream());
+
+                DOS.writeUTF("\n");
+
+                DOS.flush();
+
                 String res=dataInputStream.readUTF();
 
                 Log.d("D:","Ricevuto "+res);
 
 
-                DataOutputStream DOS = new DataOutputStream(socket.getOutputStream());
-
+                DOS = new DataOutputStream(socket.getOutputStream());
 
                 DOS.writeUTF(params[0].command);
+
+                DOS.flush();
+
+
+                res=dataInputStream.readUTF();
+
+                Log.d("D:","Ricevuto "+res);
+
 
 
                 handler.post( new Runnable(){
