@@ -265,31 +265,11 @@ public class MainActivity extends Activity {
 
 
 
-                DataOutputStream DOS = new DataOutputStream(socket.getOutputStream());
+                dataOutputStream= new DataOutputStream(socket.getOutputStream());
 
-                DOS.writeUTF("\n");
+                dataOutputStream.writeUTF("ciao");
 
-                DOS.flush();
-
-                dataInputStream = new DataInputStream(socket.getInputStream());
-
-                String res=dataInputStream.readUTF();
-
-                Log.d("D:","Ricevuto "+res);
-
-
-                DOS = new DataOutputStream(socket.getOutputStream());
-
-                DOS.writeUTF(params[0].command);
-
-                DOS.flush();
-
-
-                res=dataInputStream.readUTF();
-
-                Log.d("D:","Ricevuto "+res);
-
-
+                dataOutputStream.flush();
 
                 handler.post( new Runnable(){
                     public void run(){
@@ -297,13 +277,21 @@ public class MainActivity extends Activity {
                     }
                 });
 
-                Log.d("D:","ci sono");
 
-                final String response = dataInputStream.readUTF();
+
+                dataInputStream=new DataInputStream(socket.getInputStream());
+
+
+                if (dataInputStream != null) {
+                    ris=dataInputStream.readUTF();
+                }
+
+                Log.d("D:","Ricevuto "+ris);
+
 
                 handler.post( new Runnable(){
                     public void run(){
-                        Toast.makeText(getApplicationContext(), "Risposta: "+response.toString(),Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "Risposta: "+ris.toString(),Toast.LENGTH_LONG).show();
                     }
                 });
 
