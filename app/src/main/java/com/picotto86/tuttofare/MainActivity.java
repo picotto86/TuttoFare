@@ -263,13 +263,15 @@ public class MainActivity extends Activity {
                     }
                 });
 
-                dataInputStream = new DataInputStream(socket.getInputStream());
+
 
                 DataOutputStream DOS = new DataOutputStream(socket.getOutputStream());
 
                 DOS.writeUTF("\n");
 
                 DOS.flush();
+
+                dataInputStream = new DataInputStream(socket.getInputStream());
 
                 String res=dataInputStream.readUTF();
 
