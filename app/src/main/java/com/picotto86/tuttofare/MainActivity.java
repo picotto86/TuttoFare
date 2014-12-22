@@ -23,6 +23,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileNotFoundException;
@@ -230,7 +231,7 @@ public class MainActivity extends Activity {
 
         ContactInfo contatto;
 
-        String ris;
+        String text;
 
         AsyncHttpTask(ContactInfo con){
 
@@ -251,9 +252,8 @@ public class MainActivity extends Activity {
         @Override
         protected Integer doInBackground(ContactInfo... params) {
 
-            InputStreamReader dataInputStream = null;
-            OutputStreamWriter dataOutputStream = null;
-            Socket socket;
+
+            Socket socket = null;
 
             try {
                 socket = new Socket(contatto.ip, Integer.parseInt(contatto.port));
@@ -266,20 +266,18 @@ public class MainActivity extends Activity {
                 });
 
 
-                String ciao="Ciao\n";
-
-
-
-                dataOutputStream=new OutputStreamWriter(socket.getOutputStream());
-
-                dataOutputStream.write(ciao, 0, ciao.length());
+                Log.d("d:",contatto.command);
 
 
 
 
-                dataOutputStream.flush();
+                BufferedWriter bufOut = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()) );
 
-                Log.d("D:","ci sono");
+                bufOut.write( contatto.command );
+                bufOut.newLine(); //HERE!!!!!!
+                bufOut.flush();
+
+                Log.d("D:", "ci sono");
 
                 handler.post( new Runnable(){
                     public void run(){
@@ -287,22 +285,15 @@ public class MainActivity extends Activity {
                     }
                 });
 
-                dataInputStream=new InputStreamReader(socket.getInputStream());
+                BufferedReader bufIn = new BufferedReader( new InputStreamReader(socket.getInputStream() ) );
 
+                text=bufIn.readLine();
 
-
-
-
-                if (dataInputStream != null) {
-                    ris= String.valueOf(dataInputStream.read());
-                }
-
-                Log.d("D:","Ricevuto "+ris);
-
+                System.out.println("Ricevuto: "+text);
 
                 handler.post( new Runnable(){
                     public void run(){
-                        Toast.makeText(getApplicationContext(), "Risposta: "+ris.toString(),Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "Risposta: "+text,Toast.LENGTH_LONG).show();
                     }
                 });
 
@@ -314,6 +305,17 @@ public class MainActivity extends Activity {
                 e.printStackTrace();
             }
 
+            try {
+                socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
             return null;
         }
