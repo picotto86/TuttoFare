@@ -30,6 +30,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
@@ -250,11 +251,12 @@ public class MainActivity extends Activity {
         @Override
         protected Integer doInBackground(ContactInfo... params) {
 
-            DataInputStream dataInputStream = null;
-            DataOutputStream dataOutputStream = null;
+            InputStreamReader dataInputStream = null;
+            OutputStreamWriter dataOutputStream = null;
+            Socket socket;
 
             try {
-                Socket socket = new Socket(contatto.ip, Integer.parseInt(contatto.port));
+                socket = new Socket(contatto.ip, Integer.parseInt(contatto.port));
 
                 Handler handler =  new Handler(getApplicationContext().getMainLooper());
                 handler.post( new Runnable(){
@@ -264,12 +266,20 @@ public class MainActivity extends Activity {
                 });
 
 
+                String ciao="Ciao\n";
 
-                dataOutputStream= new DataOutputStream(socket.getOutputStream());
 
-                dataOutputStream.writeUTF("ciao");
+
+                dataOutputStream=new OutputStreamWriter(socket.getOutputStream());
+
+                dataOutputStream.write(ciao, 0, ciao.length());
+
+
+
 
                 dataOutputStream.flush();
+
+                Log.d("D:","ci sono");
 
                 handler.post( new Runnable(){
                     public void run(){
@@ -277,13 +287,14 @@ public class MainActivity extends Activity {
                     }
                 });
 
+                dataInputStream=new InputStreamReader(socket.getInputStream());
 
 
-                dataInputStream=new DataInputStream(socket.getInputStream());
+
 
 
                 if (dataInputStream != null) {
-                    ris=dataInputStream.readUTF();
+                    ris= String.valueOf(dataInputStream.read());
                 }
 
                 Log.d("D:","Ricevuto "+ris);
