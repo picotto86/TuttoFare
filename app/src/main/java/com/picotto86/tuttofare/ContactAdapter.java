@@ -1,58 +1,36 @@
 package com.picotto86.tuttofare;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import java.util.List;
 
-public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactViewHolder> {
+public class ContactAdapter extends ArrayAdapter<ContactInfo> {
 
-    private List<ContactInfo> contactList;
-
-    public ContactAdapter(List<ContactInfo> contactList) {
-        this.contactList = contactList;
-    }
-
-
-    @Override
-    public int getItemCount() {
-        return contactList.size();
+    public ContactAdapter(Context context, int textViewResourceId,List<ContactInfo> objects) {
+        super(context, textViewResourceId, objects);
     }
 
     @Override
-    public void onBindViewHolder(ContactViewHolder contactViewHolder, int i) {
-        ContactInfo ci = contactList.get(i);
-        contactViewHolder.vIp.setText(ci.ip);
-        contactViewHolder.vCommand.setText(ci.command);
-        contactViewHolder.vPort.setText(ci.port);
-        contactViewHolder.vTitle.setText(ci.title);
-    }
-
-    @Override
-    public ContactViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View itemView = LayoutInflater.
-                from(viewGroup.getContext()).
-                inflate(R.layout.card_layout, viewGroup, false);
-
-        return new ContactViewHolder(itemView);
-    }
-
-    public static class ContactViewHolder extends RecyclerView.ViewHolder {
-
-        protected TextView vIp;
-        protected TextView vCommand;
-        protected TextView vPort;
-        protected TextView vTitle;
-
-        public ContactViewHolder(View v) {
-            super(v);
-            vIp =  (TextView) v.findViewById(R.id.txtip);
-            vCommand = (TextView)  v.findViewById(R.id.txtcommand);
-            vPort = (TextView)  v.findViewById(R.id.txtport);
-            vTitle = (TextView) v.findViewById(R.id.title);
-        }
+    public View getView(int position, View convertView, ViewGroup parent) {
+        LayoutInflater inflater = (LayoutInflater) getContext()
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        convertView = inflater.inflate(R.layout.card_layout, null);
+        TextView ip = (TextView)convertView.findViewById(R.id.txtip);
+        TextView porta = (TextView)convertView.findViewById(R.id.txtport);
+        TextView command=(TextView)convertView.findViewById(R.id.txtcommand);
+        TextView title=(TextView)convertView.findViewById(R.id.title);
+        ContactInfo c = getItem(position);
+        ip.setText(c.ip);
+        porta.setText(c.port);
+        command.setText(c.command);
+        title.setText(c.title);
+        return convertView;
     }
 }

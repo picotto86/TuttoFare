@@ -1,16 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/card_view"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    card_view:cardCornerRadius="4dp"
-    android:layout_margin="5dp">
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/list_view_view"
+    android:layout_margin="5dp"
+    android:orientation="vertical">
 
         <TextView
             android:id="@+id/title"
@@ -56,8 +50,5 @@
             android:layout_marginRight="150dp"
             android:layout_alignBaseline="@id/txtip"/>
 
-    </RelativeLayout>
 
-
-
-</android.support.v7.widget.CardView>
+</LinearLayout>

@@ -10,22 +10,20 @@ import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.melnykov.fab.FloatingActionButton;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -41,6 +39,7 @@ import java.util.StringTokenizer;
 public class MainActivity extends Activity {
 
     static List<ContactInfo> result;
+    ContactAdapter ca;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,15 +49,13 @@ public class MainActivity extends Activity {
         final Context mContext=this;
 
         setContentView(R.layout.activity_main);
-        RecyclerView recList = (RecyclerView) findViewById(R.id.cardList);
-        recList.setHasFixedSize(true);
-        LinearLayoutManager llm = new LinearLayoutManager(this);
-        llm.setOrientation(LinearLayoutManager.VERTICAL);
-        recList.setLayoutManager(llm);
+        ListView recList = (ListView) findViewById(R.id.list_view);
+
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
-        fab.attachToRecyclerView(recList);
+        fab.attachToListView(recList);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -95,6 +92,8 @@ public class MainActivity extends Activity {
 
                         MainActivity.result.add(ci);
 
+                        ca.notifyDataSetChanged();
+
                         dialog.dismiss();
 
                         try {
@@ -119,14 +118,89 @@ public class MainActivity extends Activity {
             }
         });
 
+        result = new ArrayList<ContactInfo>();
+
+        try {
+            InputStream is=openFileInput("data");
+
+            InputStreamReader reader=new InputStreamReader(is);
+            BufferedReader buff=new BufferedReader(reader);
+
+            String received="";
+            StringBuilder builder=new StringBuilder();
+            try {
+                while((received=buff.readLine())!=null){
+
+                    builder.append(received);
+
+                    StringTokenizer st=new StringTokenizer(received.toString(),":");
+
+                    ContactInfo contact=new ContactInfo();
+
+                    contact.ip=st.nextToken();
+                    contact.port=st.nextToken();
+                    contact.command=st.nextToken();
+                    contact.title=st.nextToken();
+
+                    MainActivity.result.add(contact);
+
+                    received="";
+
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
 
 
-        ContactAdapter ca = new ContactAdapter(createList(30));
+
+        ca = new ContactAdapter(this,R.layout.card_layout,result);
         recList.setAdapter(ca);
+        registerForContextMenu(recList);
+
+        AdapterView.OnItemClickListener clickListener = new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> adapter, View view,
+                                    int position, long id) {
+
+                Log.d("D:", "toccato" + result.get(position).title);
+
+                ContactInfo con=result.get(position);
+
+                Log.d("D:","Elemento "+position);
+
+                Intent nuovaPagina;
+                //nuovaPagina = new Intent(getBaseContext(), Dettaglio.class);
+                //nuovaPagina.putExtra("ip", con.ip);
+                //nuovaPagina.putExtra("porta", con.port);
+                //nuovaPagina.putExtra("comando", con.command);
+
+                AsyncHttpTask task=new AsyncHttpTask(con);
+
+                task.execute();
 
 
+            }
+        };
+        recList.setOnItemClickListener(clickListener);
 
-        recList.addOnItemTouchListener(
+        AdapterView.OnItemLongClickListener longClickListener = new AdapterView.OnItemLongClickListener() {
+
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapter, View view,
+                                           int position, long id) {
+
+                Log.d("D:","cliccato a lungo elemento "+position);
+
+                return false;
+            }
+        };
+        recList.setOnItemLongClickListener(longClickListener);
+
+       /*recList.addOnItemTouchListener(
                 new RecyclerItemClickListener(this, new RecyclerItemClickListener.OnItemClickListener() {
                     @Override
                     public void onItemClick(View view, int position) {
@@ -149,10 +223,35 @@ public class MainActivity extends Activity {
                     }
 
                 })
-        );
+        );*/
 
     }
 
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,
+                                    ContextMenu.ContextMenuInfo menuInfo) {
+        if (v.getId()==R.id.list_view) {
+            AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+            menu.setHeaderTitle(result.get(info.position).title);
+            String[] menuItems = getResources().getStringArray(R.array.menu);
+            for (int i = 0; i<menuItems.length; i++) {
+                menu.add(Menu.NONE, i, i, menuItems[i]);
+            }
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        switch (item.getItemId()) {
+            case R.id.editItem:
+                ca.remove(ca.getItem(info.position));
+                return true;
+
+            default:
+                return super.onContextItemSelected(item);
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

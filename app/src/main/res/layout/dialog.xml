@@ -18,11 +18,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/text_ip"
-        android:minWidth="20dp"
-        android:maxWidth="20dp"
+        android:singleLine="true"
         android:layout_alignParentTop="true"
-        android:layout_alignLeft="@+id/text_port"
-        android:layout_alignStart="@+id/text_port"
+        android:layout_toRightOf="@+id/editText3"
+        android:layout_marginLeft="26dp"
+        android:layout_marginStart="26dp"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
@@ -40,13 +40,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/text_port"
-        android:layout_alignBaseline="@+id/editText2"
-        android:layout_alignBottom="@+id/editText2"
-        android:layout_toRightOf="@+id/editText3"
-        android:layout_marginLeft="119dp"
-        android:layout_marginStart="119dp"
+        android:layout_below="@+id/text_ip"
+        android:layout_alignLeft="@+id/text_ip"
+        android:layout_alignStart="@+id/text_ip"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:singleLine="true"
+        />
 
     <EditText
         android:layout_width="wrap_content"
@@ -62,11 +62,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/text_command"
-        android:layout_alignTop="@+id/editText3"
+        android:layout_below="@+id/text_port"
         android:layout_alignLeft="@+id/text_port"
         android:layout_alignStart="@+id/text_port"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:singleLine="true"
+        />
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -80,7 +82,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/text_title"
-        android:layout_above="@+id/buttonCancel"
+        android:singleLine="true"
+        android:layout_below="@+id/text_command"
         android:layout_alignLeft="@+id/text_command"
         android:layout_alignStart="@+id/text_command"
         android:layout_alignParentRight="true"
