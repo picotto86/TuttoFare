@@ -40,13 +40,14 @@ public class MainActivity extends Activity {
 
     static List<ContactInfo> result;
     ContactAdapter ca;
+    Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_my);
 
-        final Context mContext=this;
+        mContext=this;
 
         setContentView(R.layout.activity_main);
         ListView recList = (ListView) findViewById(R.id.list_view);
@@ -96,19 +97,7 @@ public class MainActivity extends Activity {
 
                         dialog.dismiss();
 
-                        try {
-                            FileOutputStream outputStream = openFileOutput("data", Context.MODE_PRIVATE);
-                            for (int i = 0; i < MainActivity.result.size(); i++) {
-
-                                ContactInfo element = MainActivity.result.get(i);
-                                String res = element.ip + ":" + element.port + ":" + element.command + ":" + element.title + "\n";
-                                outputStream.write(res.getBytes());
-                            }
-                            outputStream.close();
-                        } catch (java.io.IOException e) {
-                            e.printStackTrace();
-                        }
-
+                        salvaLista();
                     }
                 });
 
@@ -244,8 +233,14 @@ public class MainActivity extends Activity {
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         switch (item.getItemId()) {
-            case R.id.editItem:
+            case 0:
+
+                MyDialog myDialog=new MyDialog(mContext,ca,info.position);
+
+                return true;
+            case 1:
                 ca.remove(ca.getItem(info.position));
+                salvaLista();
                 return true;
 
             default:
@@ -273,6 +268,25 @@ public class MainActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    void salvaLista(){
+
+        try {
+            FileOutputStream outputStream = openFileOutput("data", Context.MODE_PRIVATE);
+            for (int i = 0; i < MainActivity.result.size(); i++) {
+
+                ContactInfo element = MainActivity.result.get(i);
+                String res = element.ip + ":" + element.port + ":" + element.command + ":" + element.title + "\n";
+                outputStream.write(res.getBytes());
+            }
+            outputStream.close();
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+        }
+
+
+
     }
 
     private List<ContactInfo> createList(int size) {
